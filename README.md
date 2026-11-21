@@ -39,8 +39,21 @@ Cuando se elimina un préstamo, también se eliminan automáticamente sus línea
 ## Paso 4: Flujo de estados
 
 1. Los botones ya se ocultan según el estado. ¿Por qué los métodos vuelven a validar el estado?
-   Porque ocultar los botones en la interfaz no es suficiente para garantizar que la operación sea válida. Las validaciones dentro de los métodos evitan que se realice un préstamo o devolución incorrecta, aunque se intente ejecutar la acción por otro medio. Así se protege la lógica del sistema.
+
+Porque ocultar los botones en la interfaz no es suficiente para garantizar que la operación sea válida. Las validaciones dentro de los métodos evitan que se realice un préstamo o devolución incorrecta, aunque se intente ejecutar la acción por otro medio. Así se protege la lógica del sistema.
 
 2. ¿Qué hace prestamo.linea_ids.equipo_id.write(...)? ¿Por qué no hace falta un for para cada equipo?
 
 Esta instrucción permite acceder a los equipos relacionados con todas las líneas del préstamo y cambiar su estado al mismo tiempo utilizando write(). No hace falta un for individual porque Odoo permite ejecutar operaciones sobre varios registros (recordsets) simultáneamente.
+
+## Paso 5. Reglas del préstamo
+
+1. El campo equipo_id ya filtra los equipos disponibles. ¿Por qué hace falta el TODO 5?
+
+Aunque el campo equipo_id filtra los equipos disponibles en la interfaz, es necesario realizar una validación adicional porque el estado de un equipo puede cambiar después de seleccionarlo. Por eso, antes de realizar el préstamo, el sistema vuelve a verificar que el equipo siga disponible, evitando prestar equipos que estén ocupados o en mantenimiento.
+
+2. ¿En qué momento se ejecuta un método con @api.constrains? ¿Y la validación de action_prestar?
+
+Los métodos con @api.constrains se ejecutan cuando se crea o modifica un registro y se cumplen los cambios en los campos que tienen especificados en el decorador, permitiendo validar los datos antes de que se guarden correctamente.
+
+Por otro lado, las validaciones de action_prestar se ejecutan cuando el usuario presiona el botón Prestar, ya que son comprobaciones necesarias justo antes de cambiar el estado del préstamo y de los equipos.

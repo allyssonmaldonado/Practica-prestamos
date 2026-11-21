@@ -1,5 +1,8 @@
 from odoo import api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
+
+DIAS_MAXIMOS_ESTUDIANTE = 7
+LIMITE_EQUIPOS_ESTUDIANTE = 2
   
 class PrestamoPrestamo(models.Model): 
     _name = "prestamo.prestamo" 
@@ -91,3 +94,36 @@ class PrestamoPrestamo(models.Model):
             prestamo.state = "devuelto"
 
             prestamo.message_post(body="Los equipos fueron devueltos.")
+
+        @api.constrains("fecha_prestamo", "fecha_devolucion", "tipo_solicitante")
+        def _check_fechas(self):
+            for prestamo in self:
+        # TODO 1: La fecha de devolución no puede ser anterior a la fecha de préstamo.
+                if prestamo.fecha_devolucion < prestamo.fecha_prestamo:
+                    raise ValidationError(
+                        "La fecha de devolución no puede ser anterior "
+                        "a la fecha de préstamo."
+                    )
+
+        # TODO 2: Si el solicitante es estudiante, los días de préstamo no pueden superar el máximo permitido.
+        if (
+            prestamo.tipo_solicitante == "estudiante"
+            and prestamo.dias_prestamo > DIAS_MAXIMOS_ESTUDIANTE
+        ):
+            raise ValidationError(
+                "Los estudiantes no pueden solicitar préstamos "
+                "por más de 7 días."
+            )
+
+
+        @api.constrains("linea_ids")
+        def _check_equipos_repetidos(self):
+            for prestamo in self:
+                # TODO 3: Un equipo no puede aparecer dos veces en el mismo préstamo.
+                if len(prestamo.linea_ids) != len(
+                    prestamo.linea_ids.equipo_id
+                ):
+                    raise ValidationError(
+                        "No se puede agregar el mismo equipo dos veces "
+                        "en un préstamo."
+                    )
