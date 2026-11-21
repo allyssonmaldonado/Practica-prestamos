@@ -81,7 +81,7 @@ class PrestamoPrestamo(models.Model):
             # TODO 4: Limitar equipos para estudiantes
             if (
                 prestamo.tipo_solicitante == "estudiante"
-                and prestamo.cantidad_equipos > LIMITE_EQUIPOS_ESTUDIANTE
+                and len(prestamo.linea_ids) > LIMITE_EQUIPOS_ESTUDIANTE
             ):
                 raise UserError(
                     "Los estudiantes solo pueden solicitar un máximo de 2 equipos."
@@ -135,10 +135,9 @@ class PrestamoPrestamo(models.Model):
     @api.constrains("linea_ids")
     def _check_equipos_repetidos(self):
         for prestamo in self:
+            equipos_ids = prestamo.linea_ids.mapped("equipo_id").ids
             # TODO 3: No permitir equipos duplicados
-            if len(prestamo.linea_ids) != len(
-                prestamo.linea_ids.equipo_id
-            ):
+            if len(equipos_ids) != len(set(equipos_ids)):
                 raise ValidationError(
                     "No se puede agregar el mismo equipo dos veces "
                     "en un préstamo."
