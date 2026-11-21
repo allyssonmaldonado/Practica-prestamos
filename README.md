@@ -57,3 +57,17 @@ Aunque el campo equipo_id filtra los equipos disponibles en la interfaz, es nece
 Los métodos con @api.constrains se ejecutan cuando se crea o modifica un registro y se cumplen los cambios en los campos que tienen especificados en el decorador, permitiendo validar los datos antes de que se guarden correctamente.
 
 Por otro lado, las validaciones de action_prestar se ejecutan cuando el usuario presiona el botón Prestar, ya que son comprobaciones necesarias justo antes de cambiar el estado del préstamo y de los equipos.
+
+## Paso 6. Contacto, kanban y búsqueda
+
+1. ¿Qué pasa si arrastra una tarjeta del Kanban a otra columna? ¿Por qué?
+
+Al arrastrar una tarjeta de una columna a otra en el Kanban, cambia el estado del equipo, porque las columnas están agrupadas por el campo estado. Esto permite modificar visualmente el estado del equipo, por ejemplo, pasar de Disponible a Prestado.
+
+Sin embargo, hay que tener cuidado porque al cambiarlo manualmente se puede generar una inconsistencia si no se realiza desde el proceso de préstamo correspondiente.
+
+2. El campo prestamo_ids se agregó a res.partner. ¿Se crea una columna nueva en la tabla de contactos? Explique.
+
+No, no se crea una nueva columna en la tabla de contactos. El campo prestamo_ids es un campo One2many, por lo que permite mostrar los préstamos relacionados con un contacto.
+
+La relación se almacena mediante el campo partner_id del modelo prestamo.prestamo, que indica a qué contacto pertenece cada préstamo. Por eso, prestamo_ids permite consultar los préstamos de un contacto sin almacenar una lista de préstamos directamente en la tabla de contactos.
