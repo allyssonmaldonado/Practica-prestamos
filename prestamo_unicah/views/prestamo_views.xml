@@ -20,6 +20,8 @@
         <field name="arch" type="xml"> 
             <form>
                 <header> 
+                    <button name="action_marcar_atrasado" string="Marcar atrasado" type="object"
+                            class="btn-secondary" invisible="state != 'prestado'"/>
                     <button name="action_prestar" string="Prestar" type="object" 
                             class="btn-primary" invisible="state != 'borrador'"/> 
                     <button name="action_devolver" string="Devolver" type="object" 
